@@ -4,12 +4,9 @@ from datetime import datetime
 from typing import Optional, List
 
 app = FastAPI()
-
-# In-memory stores
 session_store = []
 chat_store = {}
 
-# Pydantic Models
 class SessionCreateRequest(BaseModel):
     session_user: str = Field(..., min_length=1)
 
@@ -26,7 +23,6 @@ class Message(BaseModel):
     role: str
     content: str
 
-# POST /sessions
 @app.post("/sessions", response_model=SessionResponse)
 def create_session(req: SessionCreateRequest):
     username = req.session_user.strip().lower()
@@ -46,7 +42,6 @@ def create_session(req: SessionCreateRequest):
 
     return session_data
 
-# POST /sessions/{session_id}/messages
 @app.post("/sessions/{session_id}/messages")
 def add_message(
     session_id: int = Path(...),
@@ -64,7 +59,6 @@ def add_message(
     })
     return {"status": "message added"}
 
-# GET /sessions/{session_id}/messages
 @app.get("/sessions/{session_id}/messages", response_model=List[Message])
 def get_messages(session_id: int, role: Optional[str] = Query(None)):
     if session_id not in chat_store:
